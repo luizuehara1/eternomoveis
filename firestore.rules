@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+       // Using request.auth.token.email as the primary admin check
+       // and fallback to an admins collection
+      return isSignedIn() && (
+        request.auth.token.email == "luiz.uehara1@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation Blueprints
+    
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'price', 'image', 'category']) &&
+             data.name is string && data.name.size() > 0 &&
+             data.price is number && data.price >= 0;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['customerName', 'customerPhone', 'items', 'total', 'status']) &&
+             data.customerName is string && 
+             data.customerPhone is string && 
+             data.items is list &&
+             data.total is number &&
+             data.status in ['novo', 'em atendimento', 'vendido', 'cancelado'];
+    }
+
+    function isValidBanner(data) {
+      return data.keys().hasAll(['image', 'active']) &&
+             data.image is string;
+    }
+
+    // Rules
+    
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidProduct(incoming());
+    }
+
+    match /orders/{orderId} {
+      // Anyone can create an order (checkout process)
+      allow create: if isValidOrder(incoming());
+      // Only admins can manage orders
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidBanner(incoming());
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /admins/{email} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /test/{docId} {
+      allow read: if true;
+    }
+  }
+}
