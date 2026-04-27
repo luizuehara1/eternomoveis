@@ -10,6 +10,7 @@ import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 console.log("Firebase initialized with projectId:", firebaseConfig.projectId);
+console.log("Current domain:", window.location.hostname, "- Ensure this is added to Authorized Domains in Firebase Console if login fails.");
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();

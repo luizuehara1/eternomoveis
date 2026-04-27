@@ -103,6 +103,23 @@ export default function AdminOrders() {
         order.status.toUpperCase()
       ];
       tableRows.push(orderData);
+
+      // Adiciona linha de detalhes dos itens logo abaixo do pedido
+      const itemsList = order.items.map(item => 
+        `• ${item.quantity}x ${item.name} - R$ ${item.price.toLocaleString('pt-BR')} (Subtotal: R$ ${(item.price * item.quantity).toLocaleString('pt-BR')})`
+      ).join('\n');
+
+      tableRows.push([{ 
+        content: `ITENS DO PEDIDO:\n${itemsList}`, 
+        colSpan: 6, 
+        styles: { 
+          fillColor: [250, 250, 250], 
+          fontSize: 8, 
+          textColor: [100, 100, 100],
+          cellPadding: 3,
+          fontStyle: 'normal'
+        } 
+      }]);
     });
 
     const monthLabel = monthFilter === 'todos' ? 'Todos' : MONTHS.find(m => m.value === monthFilter)?.label;

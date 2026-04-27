@@ -211,7 +211,17 @@ export default function App() {
           </a>
 
           {!user ? (
-            <button onClick={() => loginWithGoogle()} className="flex items-center gap-2 text-left group">
+            <button 
+              onClick={async () => {
+                try {
+                  await loginWithGoogle();
+                } catch (error) {
+                  console.error("Login error:", error);
+                  alert("Erro ao entrar com Google. Verifique se popups estão permitidos.");
+                }
+              }} 
+              className="flex items-center gap-2 text-left group"
+            >
               <User size={20} className="text-zinc-500 group-hover:text-white" />
               <div className="hidden sm:flex flex-col text-xs leading-tight">
                 <span className="text-gray-400">Bem-vindo!</span>
@@ -352,7 +362,7 @@ export default function App() {
               <div className="grid md:grid-cols-2 bg-zinc-900 rounded-xl overflow-hidden min-h-[220px] md:min-h-[380px] shadow-2xl relative border border-zinc-800 group">
                 <div className="p-6 md:p-12 flex flex-col justify-center gap-4 md:gap-6 z-20 relative">
                   <div className="space-y-1">
-                    <h4 className="text-brand-yellow font-bold text-[10px] md:text-sm tracking-[0.2em] uppercase">NOVIDADES 2024</h4>
+                    <h4 className="text-brand-yellow font-bold text-[10px] md:text-sm tracking-[0.2em] uppercase">NOVIDADES 2026</h4>
                     <h1 className="text-2xl md:text-5xl font-black uppercase leading-tight md:leading-[0.9] tracking-tighter max-w-[200px] md:max-w-none">
                       CONFORTO & <span className="text-brand-yellow">ESTILO</span> PARA VOCÊ
                     </h1>
@@ -465,7 +475,7 @@ export default function App() {
             <div className="text-brand-yellow font-black text-xl italic tracking-tighter">ETERNOS MÓVEIS</div>
             <p className="text-gray-500 normal-case leading-relaxed font-normal">
               R. Rui Barbosa, 391 - Centro, Itapeva - SP, 18410-060<br/>
-              © 2024 Eternos Móveis. Todos os direitos reservados.
+              © 2026 Eternos Móveis. Todos os direitos reservados.
             </p>
           </div>
           
